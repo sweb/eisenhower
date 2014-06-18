@@ -2,22 +2,34 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"github.com/sweb/eisenhower/task"
+	"net/http"
 )
 
+var tl = &task.TaskList{}
+
 func main() {
-	loc, _ := time.LoadLocation("Europe/Berlin")
-	ti, _ := time.ParseInLocation("02.Jan.2006", "03.Feb.2013", loc)
-	t := NewTask("Test", "Testdesc", true, ti)
-	fmt.Printf("Hello, world.\n%v", t)
 
-	tl, err := loadTasks()
+	var err error = nil
+	tl, err = task.LoadTasks()
 	if err != nil {
 		fmt.Println("error:", err)
 	}
-	err = tl.saveTasks()
+
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":8080", nil)
+
+	/*err = tl.SaveTasks()
 
 	if err != nil {
 		fmt.Println("error:", err)
+	}*/
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "My tasks:\n")
+	for _, value := range tl.Tasks {
+		fmt.Fprintf(w, "%v\n", value)
 	}
+
 }
