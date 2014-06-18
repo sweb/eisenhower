@@ -1,6 +1,10 @@
 package main
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 type Task struct {
 	Title       string
@@ -32,4 +36,12 @@ func (t *Task) Quadrant() int {
 		return 3
 	}
 	return 4
+}
+
+func (t *Task) encodeToJson() []byte {
+	b, err := json.Marshal(t)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	return b
 }
