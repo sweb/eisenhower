@@ -61,9 +61,9 @@ func (t *Task) DueTimeString() string {
 }
 
 func timeString(ti time.Time) string {
-	return ti.UTC().Format("02.01.2006 15:04")
+	return ti.Format("02.01.2006 15:04")
 }
 
 func dateString(ti time.Time) string {
-	return ti.UTC().Format("02.01.2006")
+	return ti.Format("02.01.2006")
 }

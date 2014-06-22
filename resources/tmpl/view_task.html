@@ -52,7 +52,8 @@
     		<li class="list-group-item">Quadrant: {{printf "%v" .Quadrant}}</li>
 		    <li class="list-group-item">Status: {{printf "%s" .Status}}</li>        
 		    <li class="list-group-item">Created: {{printf "%v" .CreatedString}}</li>
-		    <li class="list-group-item">Videos</li>
+		    <li class="list-group-item">Last updated: {{printf "%v" .LastChangeString}}</li>
+			<li class="list-group-item">Due Time: {{printf "%v" .DueTimeString}}</li>
 		</ul>
         <p><a class="btn btn-primary btn-lg" role="button" href="/tasks/edit/{{.Id}}">Edit &raquo;</a></p>
       </div>
