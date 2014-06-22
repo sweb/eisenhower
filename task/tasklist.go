@@ -26,7 +26,6 @@ func (tl *TaskList) SaveTasks() error {
 		return err
 	}
 	return ioutil.WriteFile(filename, encodedTaskList, 0600)
-
 }
 
 // Decodes a byte slice containing json encoded data and stores it in a

@@ -47,3 +47,23 @@ func (t *Task) Quadrant() int {
 	}
 	return 4
 }
+
+func (t *Task) CreatedString() string {
+	return timeString(t.Created)
+}
+
+func (t *Task) LastChangeString() string {
+	return timeString(t.LastChange)
+}
+
+func (t *Task) DueTimeString() string {
+	return dateString(t.DueTime)
+}
+
+func timeString(ti time.Time) string {
+	return ti.UTC().Format("02.01.2006 15:04")
+}
+
+func dateString(ti time.Time) string {
+	return ti.UTC().Format("02.01.2006")
+}

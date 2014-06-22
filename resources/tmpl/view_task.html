@@ -48,9 +48,12 @@
       <div class="container">
         <h1>{{.Title}}</h1>
         <p>{{printf "%s" .Description}}</p>
-		<p>Quadrant: {{printf "%v" .Quadrant}}</p>
-		<p>Status: {{printf "%s" .Status}}</p>
-		<p>Created: {{printf "%v" .Created}}</p>
+		<ul class="list-group">
+    		<li class="list-group-item">Quadrant: {{printf "%v" .Quadrant}}</li>
+		    <li class="list-group-item">Status: {{printf "%s" .Status}}</li>        
+		    <li class="list-group-item">Created: {{printf "%v" .CreatedString}}</li>
+		    <li class="list-group-item">Videos</li>
+		</ul>
         <p><a class="btn btn-primary btn-lg" role="button" href="/tasks/edit/{{.Id}}">Edit &raquo;</a></p>
       </div>
     </div>
