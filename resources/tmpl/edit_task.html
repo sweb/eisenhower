@@ -1,0 +1,7 @@
+<h1>Editing {{.Title}}</h1>
+
+<form action="/tasks/save/{{.Id}}" method="POST">
+<div><textarea name="title" rows="1" cols="80">{{printf "%s" .Title}}</textarea></div>
+<div><textarea name="description" rows="20" cols="80">{{printf "%s" .Description}}</textarea></div>
+<div><input type="submit" value="Save"></div>
+</form>

@@ -17,10 +17,3 @@ func TestQuadrant(t *testing.T) {
 		}
 	}
 }
-
-func TestEncodeToJson(t *testing.T) {
-	var in, out = &Task{Title: "Test", Description: "TestDesc"}, "{\"Title\":\"Test\",\"Description\":\"TestDesc\",\"Important\":false,\"Status\":\"\",\"Created\":\"0001-01-01T00:00:00Z\",\"LastChange\":\"0001-01-01T00:00:00Z\",\"DueTime\":\"0001-01-01T00:00:00Z\"}"
-	if x := in.encodeToJson(); string(x) != out {
-		t.Errorf("%v.encodeToJson() = %v, want %v", in, string(x), out)
-	}
-}

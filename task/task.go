@@ -1,14 +1,13 @@
 package task
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 )
 
 // Type task is used to store information about tasks, like a description or
 // the current status.
 type Task struct {
+	Id          int
 	Title       string
 	Description string
 	Important   bool
@@ -23,6 +22,10 @@ type Task struct {
 func NewTask(title, description string, important bool, dueTime time.Time) *Task {
 	return &Task{Title: title, Description: description, Important: important,
 		Status: "Collect", Created: time.Now(), LastChange: time.Now(), DueTime: dueTime}
+}
+
+func NewMinimalTask() *Task {
+	return &Task{Status: "Collect", Created: time.Now(), LastChange: time.Now()}
 }
 
 // Checks if the task is already urgent by comparing the due date with the
@@ -43,13 +46,4 @@ func (t *Task) Quadrant() int {
 		return 3
 	}
 	return 4
-}
-
-// Encodes to json...may not be necessary.
-func (t *Task) encodeToJson() []byte {
-	b, err := json.Marshal(t)
-	if err != nil {
-		fmt.Println("error:", err)
-	}
-	return b
 }

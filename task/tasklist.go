@@ -2,12 +2,15 @@ package task
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"strconv"
 )
 
 // A slice of tasks
 type TaskList struct {
-	Tasks []*Task
+	Tasks     []*Task
+	idCounter int
 }
 
 // Encodes the complete task list to json
@@ -33,7 +36,7 @@ func decodeTasksFromJson(b []byte, tl *TaskList) error {
 }
 
 // Loads a TaskList from the hard drive by decoding it.
-func LoadTasks() (*TaskList, error) {
+func loadTasks() (*TaskList, error) {
 	filename := "data/taskstore.json"
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -41,5 +44,55 @@ func LoadTasks() (*TaskList, error) {
 	}
 	tl := &TaskList{}
 	err = decodeTasksFromJson(body, tl)
+	return tl, err
+}
+
+// Initializes the task list for example at server start.
+func InitTaskList() (*TaskList, error) {
+	tl, err := loadTasks()
+	if err != nil {
+		return &TaskList{}, err
+	}
+	tl.idCounter = maxCurrentTaskId(tl.Tasks)
 	return tl, nil
+}
+
+// Returns the currently highest taskId to determine the next possible taskId.
+// This function should only be necessary on server start, afterwards the
+// counter should be synchronized.
+func maxCurrentTaskId(tasks []*Task) (m int) {
+	for _, task := range tasks {
+		if task.Id > m {
+			m = task.Id
+		}
+	}
+	return
+}
+
+// Checks if tasks are available.
+func (tl *TaskList) HasTasks() bool {
+	return tl.idCounter > 0
+}
+
+func (tl *TaskList) TaskById(id string) (*Task, error) {
+	intId, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+	if !tl.HasTasks() {
+		return nil, errors.New("No tasks found...")
+	}
+	for _, task := range tl.Tasks {
+		if task.Id == intId {
+			return task, nil
+		}
+	}
+	return nil, errors.New("No such task found...")
+}
+
+func (tl *TaskList) AddTask(task *Task) string {
+	tl.idCounter++
+	task.Id = tl.idCounter
+	tl.Tasks = append(tl.Tasks, task)
+	return strconv.Itoa(tl.idCounter)
 }
