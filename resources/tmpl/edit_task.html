@@ -3,5 +3,7 @@
 <form action="/tasks/save/{{.Id}}" method="POST">
 <div><textarea name="title" rows="1" cols="80">{{printf "%s" .Title}}</textarea></div>
 <div><textarea name="description" rows="20" cols="80">{{printf "%s" .Description}}</textarea></div>
+<div><textarea name="important" rows="1" cols="80">{{printf "%v" .ImportantString}}</textarea></div>
+<div><textarea name="dueTime" rows="1" cols="80">{{printf "%v" .DueTimeString}}</textarea></div>
 <div><input type="submit" value="Save"></div>
 </form>

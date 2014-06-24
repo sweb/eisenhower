@@ -78,15 +78,29 @@ func (tl *TaskList) TaskById(id string) (*Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !tl.HasTasks() {
-		return nil, errors.New("No tasks found...")
-	}
 	for _, task := range tl.Tasks {
 		if task.Id == intId {
 			return task, nil
 		}
 	}
-	return nil, errors.New("No such task found...")
+	return nil, errors.New("Task not found...")
+}
+
+func (tl *TaskList) DeleteByTaskId(id int) error {
+	taskId := -1
+	for i := 0; i < len(tl.Tasks); i++ {
+		if id == tl.Tasks[i].Id {
+			taskId = i
+			break
+		}
+	}
+	if taskId == -1 {
+		return errors.New("Task not found...")
+	}
+	copy(tl.Tasks[taskId:], tl.Tasks[taskId+1:])
+	tl.Tasks[len(tl.Tasks)-1] = nil
+	tl.Tasks = tl.Tasks[:len(tl.Tasks)-1]
+	return nil
 }
 
 func (tl *TaskList) AddTask(task *Task) string {

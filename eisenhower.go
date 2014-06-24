@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/sweb/eisenhower/task"
 	"html/template"
 	"io/ioutil"
@@ -18,7 +17,7 @@ var (
 
 var tl = &task.TaskList{}
 var templates = template.Must(template.ParseFiles("resources/tmpl/edit_task.html",
-	"resources/tmpl/view_task.html"))
+	"resources/tmpl/view_task.html", "resources/tmpl/task_list.html"))
 
 var validPath = regexp.MustCompile("^/tasks/(edit|save|view)/([0-9]+)$")
 
@@ -53,21 +52,13 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "My tasks:\n")
-	if tl.HasTasks() {
-		for _, value := range tl.Tasks {
-			fmt.Fprintf(w, "%v\n", value)
-		}
-	} else {
-		fmt.Fprintf(w, "No tasks yet")
-	}
-
+	renderTemplate(w, "task_list.html", tl)
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, taskId string) {
 	p, err := tl.TaskById(taskId)
 	if err != nil {
-		fmt.Println("error:", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	} else {
 		renderTemplate(w, "view_task", p)
 	}
@@ -76,33 +67,35 @@ func viewHandler(w http.ResponseWriter, r *http.Request, taskId string) {
 func editHandler(w http.ResponseWriter, r *http.Request, taskId string) {
 	editTask, err := tl.TaskById(taskId)
 	if err != nil {
-		editTask = task.NewMinimalTask()
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	renderTemplate(w, "edit_task", editTask)
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, taskId string) {
-	title := r.FormValue("title")
-	descr := r.FormValue("description")
-	t, err := tl.TaskById(taskId)
+	tId := taskId
+	if taskId == "0" {
+		tId = tl.AddTask(task.NewMinimalTask())
+	}
+	t, err := tl.TaskById(tId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	t.Description = descr
-	t.Title = title
+	t.Update(r.FormValue("title"), r.FormValue("description"),
+		r.FormValue("important"), r.FormValue("dueTime"))
 	err = tl.SaveTasks()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/tasks/view/"+string(taskId), http.StatusFound)
+	http.Redirect(w, r, "/tasks/view/"+tId, http.StatusFound)
 }
 
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	t := task.NewMinimalTask()
-	id := tl.AddTask(t)
-	http.Redirect(w, r, "/tasks/edit/"+id, http.StatusFound)
+	renderTemplate(w, "edit_task", t)
 }
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
@@ -116,7 +109,7 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
-func renderTemplate(w http.ResponseWriter, tmpl string, t *task.Task) {
+func renderTemplate(w http.ResponseWriter, tmpl string, t interface{}) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", t)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

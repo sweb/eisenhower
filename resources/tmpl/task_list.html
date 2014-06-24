@@ -1,0 +1,24 @@
+<h1>Task list</h1>
+
+<table style="width:800px">
+<tr>
+	<th>Created</th>
+  <th>Title</th>
+  <th>Description</th> 
+	<th>Quadrant</th>
+	<th>Status</th>
+	<th>Due Time</th>
+	<th>Last Changed</th>
+</tr>
+{{range .Tasks}}
+<tr>
+	<td>{{.CreatedString}}</td>
+  <td>{{.Title}}</td>
+  <td>{{.Description}}</td> 
+  <td>{{.Quadrant}}</td>
+	<td>{{.Status}}</td>
+	<td>{{.DueTimeString}}</td>
+	<td>{{.LastChangeString}}</td>
+</tr>
+{{end}}
+</table>

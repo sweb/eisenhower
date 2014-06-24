@@ -1,6 +1,7 @@
 package task
 
 import (
+	"errors"
 	"time"
 )
 
@@ -56,6 +57,7 @@ func (t *Task) LastChangeString() string {
 	return timeString(t.LastChange)
 }
 
+// Returns the due time formatted as string without time, just as date.
 func (t *Task) DueTimeString() string {
 	return dateString(t.DueTime)
 }
@@ -66,4 +68,43 @@ func timeString(ti time.Time) string {
 
 func dateString(ti time.Time) string {
 	return ti.Format("02.01.2006")
+}
+
+// Returns boolean values in a more readable fashion.
+func (t *Task) ImportantString() string {
+	if t.Important {
+		return "Yes"
+	}
+	return "No"
+}
+
+// Sets the due date by using a given string formatted date. If the date is
+// malformed an error is returned. The date format is "02.01.2006"
+func (t *Task) setDueTime(newTime string) error {
+	parsedTime, err := time.ParseInLocation("02.01.2006", newTime, time.Local)
+	if err != nil {
+		return err
+	}
+	t.DueTime = parsedTime
+	return nil
+}
+
+func (t *Task) setImportantFlag(important string) error {
+	if important == "Yes" {
+		t.Important = true
+		return nil
+	}
+	if important == "No" {
+		t.Important = false
+		return nil
+	}
+	return errors.New("No acceptable boolean flag...")
+}
+
+func (t *Task) Update(title, description, important, dueTime string) {
+	t.Title = title
+	t.Description = description
+	t.setImportantFlag(important)
+	t.setDueTime(dueTime)
+	t.LastChange = time.Now()
 }
